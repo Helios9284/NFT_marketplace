@@ -25,8 +25,8 @@ contract LaunchPadFactory {
     event LaunchPadCreated(address _launchpad, address _seller);
 
 
-    constructor() public {
-        owner = msg.sender;
+    constructor(address _DAOAddress){
+        owner = _DAOAddress;
     }
 
 
@@ -63,7 +63,7 @@ contract LaunchPadFactory {
 
 
 
-contract LaunchPad is ERC721, ERC721URIStorage {
+contract LaunchPad is ERC721URIStorage {
 
 
     address public owner;
@@ -79,6 +79,7 @@ contract LaunchPad is ERC721, ERC721URIStorage {
     mapping(address => uint) NFTperAddr;
     uint256 numberOfSubscribers = 1;
     uint256 totalNFTCommitment;
+    string baseURI;
 
 
     
@@ -90,16 +91,17 @@ contract LaunchPad is ERC721, ERC721URIStorage {
     event LaunchPadStarted(uint _startTime);
     event LaunchPadEnded(uint _endTime);
 
-        constructor(string memory _name,string memory _symbol, address _owner, string memory _uri) ERC721(_name, _symbol) {
-            owner = _owner;
-            _safeMint(owner, mintedTokenId);
-            _setTokenURI(mintedTokenId, _uri);
-        }
-        modifier onlyOwner {
-            require(msg.sender == owner, "Only owner can call this function");
-            _;
-        }
+    constructor(string memory _name,string memory _symbol, address _owner, string memory _uri) ERC721(_name, _symbol) {
+        owner = _owner;
+        baseURI = _uri;
+        // _safeMint(owner, mintedTokenId);
+        // _setTokenURI(mintedTokenId, _uri);
     }
+    modifier onlyOwner {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+}
 
     function startLaunchPad(uint256 _duration, uint _nftprice, uint256 _totalAmountNeeded) external onlyOwner {
         
@@ -144,7 +146,7 @@ contract LaunchPad is ERC721, ERC721URIStorage {
 
         success = true;
     }
-    function depositToken(address _token, uint256 _amtofNFT) public returns(bool success){
+    // function depositToken(address _token, uint256 _amtofNFT) public returns(bool success){
         // TODO
         // require(padId[_id].exists == true, "Token does not exist");
         // require(padId[_id].endTime < block.timestamp, "campaign not yet ended");
@@ -152,7 +154,7 @@ contract LaunchPad is ERC721, ERC721URIStorage {
         // require(msg.sender == creator[_id].creator, "You are not the admin");
         // padId[_id].TokenA.transfer(msg.sender, _amount);
         // success = true;
-    }
+    // }
 
     function withdrawNFT() public returns(bool success){
 
@@ -185,11 +187,14 @@ contract LaunchPad is ERC721, ERC721URIStorage {
         (bool success,) = inputAddress.call{value:amount}("");
         require(success, "This transaction has failed");
     }
-    function withdrawToken(address _tokenContractAddress, address _receivingAddress, uint256 _tokenAmount) public view onlyOwner {
-        require(_receivingAddress != address(0), "Can't send tokens to address zero");
-        // TODO
-        // IERC20(_tokenContractAddress).transfer(_receivingAddress, _tokenAmount * 10 ** decimals());
+    // function withdrawToken(address _tokenContractAddress, address _receivingAddress, uint256 _tokenAmount) public view onlyOwner {
+    //     require(_receivingAddress != address(0), "Can't send tokens to address zero");
+    //     // TODO
+    //     // IERC20(_tokenContractAddress).transfer(_receivingAddress, _tokenAmount * 10 ** decimals());
+    // }
+    function _baseURI() internal view virtual override(ERC721) returns (string memory) {
+        return baseURI;
     }
-    function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns (string memory) {}
-    function _burn(uint256 tokenId) internal virtual override(ERC721, ERC721URIStorage) {}
+    // function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns (string memory) {}
+    // function _burn(uint256 tokenId) internal virtual override(ERC721, ERC721URIStorage) {}
 
