@@ -1,9 +1,9 @@
 
-import { Inter } from 'next/font/google'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import Link from 'next/link'
+import { Inter } from "next/font/google"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
+import Link from "next/link"
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] })
 
 export default function Navbar() {
   return (
@@ -12,10 +12,10 @@ export default function Navbar() {
         <Link href={"/"}>BUNZZ</Link>
       </div>
       <div>
-        <ul className='space-x-7 text-lg'>
+        <ul className="space-x-7 text-lg">
           <Link href={"/"}>Home</Link>
           <Link href={"/about"}>About</Link>
-          <Link href={"/contactus"}>Contact Us</Link>
+          <Link href={"/launchpad"}>Launch Pad</Link>
           <Link href={"/marketplace"}>Market Place</Link>
           <Link href={"/profile"}>Profile</Link>
         </ul>
