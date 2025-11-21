@@ -41,7 +41,6 @@ const ArtistPageDesktop = () => {
     // Please sync "NFT Page (Desktop)" to the project
   }, []);
 
-
   return (
     <div className="relative bg-background w-full flex flex-col items-start justify-start text-center text-3xl text-caption-label-text font-caption-work-sans">
       <Header />
