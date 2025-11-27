@@ -1,4 +1,4 @@
-const marketplaceAddr = 0xf608b2e0f53918d77efbd7b3339d7b61234a4c9e;
+const marketplaceAddr = "0xf608b2e0f53918d77efbd7b3339d7b61234a4c9e";
 
 const launchpadFactoryAbi = [
   {
