@@ -7,9 +7,7 @@ const NFTContainer = memo(
     onNFTCardContainerClick,
   }) => {
     return (
-      <div className="w-[1050px] flex flex-row items-start justify-start gap-[30px] text-left text-3xl text-text font-caption-work-sans">
-
-
+      <div className="w-[1050px] flex flex-row items-start justify-start gap-[30px] text-left text-3xl text-text font-sans">
         <div
           className="flex-1 rounded-xl bg-[#1C1C1C] h-[469px] flex flex-col items-center justify-start cursor-pointer"
           onClick={onNFTCardContainerClick}
