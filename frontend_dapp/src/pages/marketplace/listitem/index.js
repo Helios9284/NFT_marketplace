@@ -105,7 +105,7 @@ export default function ListItem() {
                             console.log(itemDetails)}
                         }/>
                     </label>
-                    <button onClick={(e) => {
+                    <button type='submit' onClick={(e) => {
                         e.preventDefault();
                         write?.()
                         }}>
