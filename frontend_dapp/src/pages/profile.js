@@ -3,6 +3,7 @@ import ArtistInfo from "../components/profile/ArtistInfo";
 import NFTContainer from "../components/profile/NFTContainer";
 import { useRouter } from "next/router";
 import {Tab} from '@headlessui/react'
+import axios from 'axios';
 import { erc721ABI, useContractReads } from 'wagmi'
 import { azukiContract, baycContract, marketplaceContract } from '@/utils/contractInfo'
 import { Suspense, useEffect, useState } from 'react'
@@ -43,7 +44,34 @@ const ArtistPage = () => {
 
   useEffect(() => {
     setArtistInfo(nameAndURI)
-  }, [artistInfo])
+  }, [nameAndURI])
+
+  console.log(artistInfo)
+
+  const tokenURI = artistInfo?.[1]
+
+  const [tokenMetadata, setTokenMetadata] = useState();
+    const [nftImgUrl, setNftImgUrl] = useState();
+
+    const baseIpfs = "https://ipfs.io/ipfs/";
+
+    async function getMetadata(tokenURI) {
+        var metadataurl = `${baseIpfs}${tokenURI?.slice(7)}`
+        var res = await axios.get(metadataurl).then((res) => {return(res.data)})
+        setTokenMetadata(res)
+        var imgURI = tokenMetadata?.image
+        var imgurl = `${baseIpfs}${imgURI?.slice(7)}`
+        setNftImgUrl(imgurl)
+    }
+
+    useEffect(
+      () => {
+        getMetadata(tokenURI);
+        console.log(tokenMetadata)
+        console.log(nftImgUrl)
+      },
+      [tokenMetadata]
+    )
 
   return (
     <div className="relative bg-background w-full flex flex-col items-start justify-start text-center text-3xl text-caption-label-text font-caption-work-sans">
@@ -112,19 +140,20 @@ const ArtistPage = () => {
             <div className="grid grid-cols-3 gap-5">
               <div className="self-stretch bg-background-secondary flex flex-col py-20 px-0 items-center justify-start gap-[30px]">
                 {<NFTContainer
-                    NFTURI={nameAndURI?.[1]}
-                    NFTName={nameAndURI?.[0]}
+                    NFTURI={nftImgUrl ?? "assets/CherryGirl.png"}
+                    NFTName={tokenMetadata?.name ?? <p>Loading...</p>}
                     onNFTCardContainerClick={onNFTCardContainerClick}
                   /> ?? <p>Loading...</p>}
                 <p>1</p>
               </div>
+              {<NFTSpecs tokenURI={artistInfo?.[1]} />}
             </div>
           </Tab.Panel>
           <Tab.Panel>
             <div className="self-stretch bg-background-secondary flex flex-col py-20 px-0 items-center justify-start gap-[30px]">
               <NFTContainer
-                NFTURI={nameAndURI?.[1]}
-                NFTName={nameAndURI?.[0]}
+                NFTURI={nftImgUrl ?? "assets/CherryGirl.png"}
+                NFTName={tokenMetadata?.name ?? <p>Loading...</p>}
                 onNFTCardContainerClick={onNFTCardContainerClick}
               />
               <p>2</p>
@@ -134,8 +163,8 @@ const ArtistPage = () => {
           <Tab.Panel>
             <div className="self-stretch bg-background-secondary flex flex-col py-20 px-0 items-center justify-start gap-[30px]">
               <NFTContainer
-                NFTURI={nameAndURI?.[1]}
-                NFTName={nameAndURI?.[0]}
+                NFTURI={nftImgUrl ?? "assets/CherryGirl.png"}
+                NFTName={tokenMetadata?.name ?? <p>Loading...</p>}
                 onNFTCardContainerClick={onNFTCardContainerClick}
               />
               <p>3</p>
