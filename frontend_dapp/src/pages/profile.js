@@ -3,12 +3,8 @@ import ArtistInfo from "../components/profile/ArtistInfo";
 import NFTContainer from "../components/profile/NFTContainer";
 import { useRouter } from "next/router";
 import {Tab} from '@headlessui/react'
-<<<<<<< HEAD
 import axios from 'axios';
 import { erc721ABI, useContractReads } from 'wagmi'
-=======
-import { useContractReads } from 'wagmi'
->>>>>>> 3018fce89f89c97a8fa6d0de59e1e358f9cbcf8d
 import { azukiContract, baycContract, marketplaceContract } from '@/utils/contractInfo'
 import { Suspense, useEffect, useState } from 'react'
 import MarketPlaceHeaderTemplate from '@/components/marketplace/MarketPlaceHeaderTemplate'
@@ -33,7 +29,6 @@ const ArtistPage = () => {
     });
   }, [router]);
 
-<<<<<<< HEAD
   useEffect(() => {
     setArtistInfo(nameAndURI)
   }, [nameAndURI])
@@ -64,56 +59,6 @@ const ArtistPage = () => {
       },
       [tokenMetadata]
     )
-=======
-  const onNFTCardContainer2Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/AstroFiction.png", imageTitles: "AstroFiction"}
-    });
-  }, [router]);
-
-  const onNFTCardContainer3Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/CryptoCity.png", imageTitles: "CryptoCity" }
-    });
-  }, [router]);
-
-  const onNFTCardContainer4Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/ColorfulDog.png", imageTitles:"ColorfulDog" }
-    });
-  }, [router]);
-
-  const onNFTCardContainer5Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/DistantGalaxy.png", imageTitles:"Distant Galaxy" }
-    });
-  }, [router]);
-
-  const onNFTCardContainer6Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/DistantGalaxy.png", imageTitles:"Distant Galaxy" }
-    });
-  }, [router]);
-
-  const onNFTCardContainer7Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/DistantGalaxy.png", imageTitles:"Distant Galaxy" }
-    });
-  }, [router]);
-
-  const onNFTCardContainer8Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/DistantGalaxy.png", imageTitles:"Distant Galaxy" }
-    });
-  }, [router]);
->>>>>>> 3018fce89f89c97a8fa6d0de59e1e358f9cbcf8d
 
   return (
     <div className="relative bg-background w-full flex flex-col items-start justify-start text-center text-3xl text-caption-label-text font-caption-work-sans">
@@ -167,47 +112,6 @@ const ArtistPage = () => {
             </div>
           </div>
         </div>
-<<<<<<< HEAD
-        </div>
-        </Tab.List>
-        <Tab.Panels>
-          <Tab.Panel>
-            <div className="grid grid-cols-3 gap-5">
-              <div className="self-stretch bg-background-secondary flex flex-col py-20 px-0 items-center justify-start gap-[30px]">
-                {<NFTContainer
-                    NFTURI={nftImgUrl ?? "assets/CherryGirl.png"}
-                    NFTName={tokenMetadata?.name ?? <p>Loading...</p>}
-                    onNFTCardContainerClick={onNFTCardContainerClick}
-                  /> ?? <p>Loading...</p>}
-                <p>1</p>
-              </div>
-              {<NFTSpecs tokenURI={artistInfo?.[1]} />}
-            </div>
-          </Tab.Panel>
-          <Tab.Panel>
-            <div className="self-stretch bg-background-secondary flex flex-col py-20 px-0 items-center justify-start gap-[30px]">
-              <NFTContainer
-                NFTURI={nftImgUrl ?? "assets/CherryGirl.png"}
-                NFTName={tokenMetadata?.name ?? <p>Loading...</p>}
-                onNFTCardContainerClick={onNFTCardContainerClick}
-              />
-              <p>2</p>
-              {/* {<NFTSpecs tokenURI={nameAndURI?.[1]} /> ?? <p>Loading...</p>} */}
-            </div>
-          </Tab.Panel>
-          <Tab.Panel>
-            <div className="self-stretch bg-background-secondary flex flex-col py-20 px-0 items-center justify-start gap-[30px]">
-              <NFTContainer
-                NFTURI={nftImgUrl ?? "assets/CherryGirl.png"}
-                NFTName={tokenMetadata?.name ?? <p>Loading...</p>}
-                onNFTCardContainerClick={onNFTCardContainerClick}
-              />
-              <p>3</p>
-            </div>
-          </Tab.Panel>
-        </Tab.Panels>
-      </Tab.Group>
-=======
       </div>
       <div className="self-stretch bg-background-secondary flex flex-col py-20 px-0 items-center justify-start gap-[30px]">
         <NFTContainer
@@ -246,7 +150,6 @@ const ArtistPage = () => {
         />
       </div>
 
->>>>>>> 3018fce89f89c97a8fa6d0de59e1e358f9cbcf8d
     </div>
   );
 };
