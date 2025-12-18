@@ -7,6 +7,7 @@ import "../src/NFTMarketPlace.sol";
 
 contract DeployScript is Script {
     LaunchPadFactory launchpadFactory;
+    LaunchPad launchpad;
     NFTMarketplace marketPlace;
     function setUp() public {}
 
@@ -15,7 +16,10 @@ contract DeployScript is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         launchpadFactory = new LaunchPadFactory(0xe97a4C739b738e57539566547c3757ecb1bA223a);
-        // marketPlace = new NFTMarketplace();
+        launchpadFactory.whitelistAddress(0xe97a4C739b738e57539566547c3757ecb1bA223a);
+        address _launchpad = launchpadFactory.createLaunchPad{value: 0.006 ether}("Benz", "BNZ","ipfs://Qmd9FE1XKkdpddUUG9nUkgQruVV2B8aE2cuCayS1QcWRTS");
+        launchpad = LaunchPad(payable(_launchpad));
+        marketPlace = new NFTMarketplace();
 
         vm.stopBroadcast();
     }

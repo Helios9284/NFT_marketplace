@@ -33,12 +33,12 @@ const NFTHeader = memo((
     <div className="self-stretch bg-background flex flex-col py-10 px-0 items-center text-2xl font-h5-space-mono">
       <div className="flex flex-row gap-[100px]">
         <div className="shrink-0 flex flex-col  gap-[30px]">
-          <div className="flex-1 rounded-xl flex flex-col items-start text-7xl">
+            <div className="flex-1 rounded-xl flex flex-col items-start text-7xl">
               <b className="self-stretch relative leading-[140%] capitalize">
-                {collectionName}
+                {collectionName ?? <p>Loading...</p>}
               </b>
               <div className="self-stretch relative text-3xl leading-[160%] capitalize font-caption-work-sans">
-                {tokenId}
+                {tokenId ?? <p>Loading...</p>}
               </div>
             </div>
           <div className="self-stretch flex flex-col items-start justify-start gap-[8px] text-caption-label-text">
@@ -57,7 +57,7 @@ const NFTHeader = memo((
               <BsYoutube className="relative w-5 h-5 shrink-0 cursor-pointer" onClick={onYoutubeLogoIconClick} />
               <BsTwitter className="relative w-5 h-5  shrink-0 cursor-pointer" onClick={onTwitterLogoIconClick} />
               <BsInstagram className="relative w-5 h-5  shrink-0 cursor-pointer"  onClick={onInstagramLogoIconClick} />
-              
+
             </div>
           </div>
         </div>
@@ -65,7 +65,7 @@ const NFTHeader = memo((
           <div className="rounded-xl bg-[#A259FF] w-[186px] h-[60px] shrink-0 flex flex-row py-0 px-[50px] box-border items-center justify-center gap-[12px]">
             <BiCopy className="relative w-5 h-5 shrink-0"/>
             <div className="relative leading-[140%] font-semibold">
-              {collectionAddress?.slice(0,6)+"..."+collectionAddress?.slice(-6)}
+              {collectionAddress?.slice(0,6)+"..."+collectionAddress?.slice(-6) ?? <p>Loading...</p>}
             </div>
           </div>
           <div className="rounded-xl box-border h-[60px] flex flex-row py-0 px-[30px] items-center justify-center gap-[12px] border-[2px] border-solid border-[#A259FF]">

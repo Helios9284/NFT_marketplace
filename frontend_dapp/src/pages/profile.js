@@ -3,7 +3,8 @@ import ArtistInfo from "../components/profile/ArtistInfo";
 import NFTContainer from "../components/profile/NFTContainer";
 import { useRouter } from "next/router";
 import {Tab} from '@headlessui/react'
-import { useContractReads } from 'wagmi'
+import axios from 'axios';
+import { erc721ABI, useContractReads } from 'wagmi'
 import { azukiContract, baycContract, marketplaceContract } from '@/utils/contractInfo'
 import { Suspense, useEffect, useState } from 'react'
 import MarketPlaceHeaderTemplate from '@/components/marketplace/MarketPlaceHeaderTemplate'
@@ -28,54 +29,36 @@ const ArtistPage = () => {
     });
   }, [router]);
 
-  const onNFTCardContainer2Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/AstroFiction.png", imageTitles: "AstroFiction"}
-    });
-  }, [router]);
+  useEffect(() => {
+    setArtistInfo(nameAndURI)
+  }, [nameAndURI])
 
-  const onNFTCardContainer3Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/CryptoCity.png", imageTitles: "CryptoCity" }
-    });
-  }, [router]);
+  console.log(artistInfo)
 
-  const onNFTCardContainer4Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/ColorfulDog.png", imageTitles:"ColorfulDog" }
-    });
-  }, [router]);
+  const tokenURI = artistInfo?.[1]
 
-  const onNFTCardContainer5Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/DistantGalaxy.png", imageTitles:"Distant Galaxy" }
-    });
-  }, [router]);
+  const [tokenMetadata, setTokenMetadata] = useState();
+    const [nftImgUrl, setNftImgUrl] = useState();
 
-  const onNFTCardContainer6Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/DistantGalaxy.png", imageTitles:"Distant Galaxy" }
-    });
-  }, [router]);
+    const baseIpfs = "https://ipfs.io/ipfs/";
 
-  const onNFTCardContainer7Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/DistantGalaxy.png", imageTitles:"Distant Galaxy" }
-    });
-  }, [router]);
+    async function getMetadata(tokenURI) {
+        var metadataurl = `${baseIpfs}${tokenURI?.slice(7)}`
+        var res = await axios.get(metadataurl).then((res) => {return(res.data)})
+        setTokenMetadata(res)
+        var imgURI = tokenMetadata?.image
+        var imgurl = `${baseIpfs}${imgURI?.slice(7)}`
+        setNftImgUrl(imgurl)
+    }
 
-  const onNFTCardContainer8Click = useCallback(() => {
-    router.push({
-      pathname: "/nftdetail",
-      query: { imageIds: "assets/DistantGalaxy.png", imageTitles:"Distant Galaxy" }
-    });
-  }, [router]);
+    useEffect(
+      () => {
+        getMetadata(tokenURI);
+        console.log(tokenMetadata)
+        console.log(nftImgUrl)
+      },
+      [tokenMetadata]
+    )
 
   return (
     <div className="relative bg-background w-full flex flex-col items-start justify-start text-center text-3xl text-caption-label-text font-caption-work-sans">

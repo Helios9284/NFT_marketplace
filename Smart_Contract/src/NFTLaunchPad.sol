@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
+
 import "../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import "../lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import "../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
@@ -7,12 +8,13 @@ import "../lib/openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721UR
 
 contract LaunchPadFactory {
 
-    address public owner; 
+    address public owner;
     uint public totalLaunchPads = 1;
-
     uint public listingFee = 0.0006 ether;
     mapping(address => bool) public whitelistedAddresses;
     mapping(uint => PadDetails) public LaunchPads;
+    mapping(address => bool) public Admins;
+
 
     struct PadDetails {
         string name;
@@ -21,24 +23,38 @@ contract LaunchPadFactory {
         address padAddress;
     }
 
-
     event LaunchPadCreated(address _launchpad, address _seller);
-
 
     constructor(address _DAOAddress){
         owner = _DAOAddress;
+        Admins[msg.sender] = true;
     }
 
-
     modifier onlyOwner {
-        require(msg.sender == owner, "Only owner can call this function");
+        require(Admins[msg.sender], "Only Admins can call this function");
         _;
     }
 
 
+    function setListingFee(uint _fee) external onlyOwner {
+        require(_fee != 0, "Can't set fee to zero");
+        listingFee = _fee;
+    }
+
     function whitelistAddress(address _address) public onlyOwner {
         require(_address != address(0), "Can't whitelist address zero");
         whitelistedAddresses[_address] = true;
+    }
+
+    function removeAdmin(address _address) external onlyOwner{
+        require(_address != address(0), "Address zero is not Admin");
+        Admins[_address] = false;
+    }
+
+
+    function setAdmin(address _address) external onlyOwner{
+        require(_address != address(0), "Cant make address zero Admin");
+        Admins[_address] = true;
     }
 
     function createLaunchPad(string memory _name, string memory symbol, string memory uri) external payable returns(address _launchpad){
@@ -56,16 +72,14 @@ contract LaunchPadFactory {
         emit LaunchPadCreated(_launchpad, msg.sender);
     }
 
+    function withdraw() external onlyOwner returns(bool success) {
+        (success,) = payable(owner).call{value: address(this).balance}("");
+    }
+
+    receive() external payable{}
 }
 
-
-
-
-
-
 contract LaunchPad is ERC721URIStorage {
-
-
     address public owner;
     uint public duration;
     uint public totalNftsForSale;
@@ -81,11 +95,7 @@ contract LaunchPad is ERC721URIStorage {
     uint256 public totalNFTCommitment;
     string public baseURI;
 
-
-    
     mapping(address => uint) public subscriberIndex;  // Get the index of a suscriber
-
-
 
     ///////////////  EVENTS ////////////////////
     event LaunchPadStarted(uint _startTime);
@@ -97,16 +107,17 @@ contract LaunchPad is ERC721URIStorage {
         // _safeMint(owner, mintedTokenId);
         // _setTokenURI(mintedTokenId, _uri);
     }
+
     modifier onlyOwner {
         require(msg.sender == owner, "Only owner can call this function");
         _;
     }
-}
+
 
     function startLaunchPad(uint256 _duration, uint _nftprice, uint256 _totalAmountNeeded) external onlyOwner {
-        
 
-        //require(_totalNftsforSale != 0, "Can't list zero nfts for sale");
+
+        // require(_totalNftsforSale != 0, "Can't list zero nfts for sale");
         require(_duration != 0, "Duration can't be zero");
         require(duration == 0, "Launchpad already started");
 
@@ -132,22 +143,18 @@ contract LaunchPad is ERC721URIStorage {
         require(amtRaised <= totalAmountNeeded, "Maximum Amount Reached");
         require(totalNFTCommitment <= totalNftsForSale, "All NFTs have been booked");
         require(msg.value == _amtofNFT * price, "Send appropriate value for NFT");
-
-
-
         NFTperAddr[msg.sender] += _amtofNFT;
         amtRaised += msg.value;
         subscribers.push(msg.sender);
         subscriberIndex[msg.sender] = numberOfSubscribers;
         numberOfSubscribers++;
         totalNFTCommitment += _amtofNFT;
-
-
-
         success = true;
     }
+
     // function depositToken(address _token, uint256 _amtofNFT) public returns(bool success){
         // TODO
+        // peg the number of nfts an address can purchase;
         // require(padId[_id].exists == true, "Token does not exist");
         // require(padId[_id].endTime < block.timestamp, "campaign not yet ended");
         // require(_amount <= padId[_id].tokenABalance, "Not enough tokens");
@@ -162,8 +169,8 @@ contract LaunchPad is ERC721URIStorage {
         require(block.timestamp > endTime, "campaign not yet ended");
         require(_amtofNFT > 0, "You did not suscribe");
 
-
         for (uint i = 1; i <= _amtofNFT; i++) {
+            // Add to Constructor
             _mint(msg.sender, mintedTokenId);
             mintedTokenId++;
         }
@@ -173,6 +180,8 @@ contract LaunchPad is ERC721URIStorage {
 
     function transferLeftoverNFT(address recipient) external onlyOwner returns(bool success){
         require(block.timestamp > endTime, "LaunchPad has not ended");
+        //Todo
+        //write test for this function
         require(totalNFTCommitment < totalNftsForSale, "All NFTs has been minted");
 
         for (totalNFTCommitment; totalNFTCommitment < totalNftsForSale; totalNFTCommitment++) {
@@ -181,20 +190,50 @@ contract LaunchPad is ERC721URIStorage {
         }
         success = true;
     }
+
+    // function transferLeftoverTokens(IERC20 _tokenContract) public returns(bool success){
+    //     require(msg.sender == owner, "Not Owner");
+    //     uint256 amount = _tokenContract.balanceOf(address(this));
+    //     require(amount > 0, "This Token is not available in this contract ");
+    //     _tokenContract.transferFrom(owner,address(this), amount );
+    //     success = true;
+    // }
+
+    // function withdrawEth() external payable {
+    //     require(msg.sender == owner, "Not Owner");
+    //     payable(owner).transfer(address(this).balance);
+    // }
+
+   // To enable the contract send out ether... to be done by only the launchpad owner
     function withdrawETH(address payable inputAddress, uint amount) external onlyOwner{
         require(inputAddress != address(0), "Can't send ether to address zero");
         require(amount <= address(this).balance, "Amount not available for withdrawal");
         (bool success,) = inputAddress.call{value:amount}("");
         require(success, "This transaction has failed");
     }
-    // function withdrawToken(address _tokenContractAddress, address _receivingAddress, uint256 _tokenAmount) public view onlyOwner {
-    //     require(_receivingAddress != address(0), "Can't send tokens to address zero");
-    //     // TODO
-    //     // IERC20(_tokenContractAddress).transfer(_receivingAddress, _tokenAmount * 10 ** decimals());
-    // }
-    function _baseURI() internal view virtual override(ERC721) returns (string memory) {
+
+    //To withdraw USDT or other tokens deposited
+    //function withdrawToken(address _tokenContractAddress, address _receivingAddress, uint256 _tokenAmount) public view onlyOwner {
+    //require(_receivingAddress != address(0), "Can't send tokens to address zero");
+    // TODO
+    // IERC20(_tokenContractAddress).transfer(_receivingAddress, _tokenAmount * 10 ** decimals());
+    //}
+
+//    function tokenURI(uint256 tokenId) public view virtual override(ERC721URIStorage) returns (string memory) {
+//         // string memory _baseURI = _baseURI();
+//         return(string(abi.encodePacked(baseURI, tokenId)));
+//    }
+
+   function _baseURI() internal view virtual override(ERC721) returns (string memory) {
         return baseURI;
     }
-    // function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns (string memory) {}
-    // function _burn(uint256 tokenId) internal virtual override(ERC721, ERC721URIStorage) {}
+//    function tokenURI(uint256 tokenId) public view virtual override(ERC721URIStorage) returns (string memory) {}
+//    function _burn(uint256 tokenId) internal virtual override(ERC721URIStorage) {}
 
+    function withdraw() external onlyOwner returns(bool success){
+        (success,) = payable(owner).call{value: address(this).balance}("");
+    }
+
+    receive() external payable{}
+
+}

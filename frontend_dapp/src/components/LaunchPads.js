@@ -145,7 +145,9 @@ const LaunchPads = ({ arg }) => {
           </div>
         </div>
         <div className="flex justify-center p-4">
-          <a href="www.sepolia.etherscan.io">View on Etherscan</a>
+          <a href="www.sepolia.etherscan.io" passHref={true}>
+            View on Etherscan
+          </a>
         </div>
       </div>
     </Link>
