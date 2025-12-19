@@ -28,7 +28,7 @@ const MarketItemTemplate = memo(
 
     async function getMetadata(tokenURI) {
         var metadataurl = `${baseIpfs}${tokenURI?.slice(7)}`
-        var res = await axios.get(metadataurl).then((res) => {return(res.data)})
+        var res = await axios.get(metadataurl).then((res) => {return(res.data)}).catch((err) => {console.log(err)})
         setTokenMetadata(res)
         var imgURI = tokenMetadata?.image
         var imgurl = `${baseIpfs}${imgURI?.slice(7)}`
@@ -76,7 +76,7 @@ const MarketItemTemplate = memo(
     return (
         <div >
   
-          <Link
+          <div
             className="flex-1 rounded-xl bg-[#1C1C1C] h-[469px] flex flex-col items-center justify-start cursor-pointer"
             href={`/marketplace/${marketItem?.nftContract}/${marketItem?.tokenId}`}
           >
@@ -114,17 +114,21 @@ const MarketItemTemplate = memo(
                     {marketItem?.price} ETH
                   </div>
                 </div>
-                <div className="flex-1 flex flex-col items-end justify-center gap-[8px] text-right">
+                {/* <div className="flex-1 flex flex-col items-end justify-center gap-[8px] text-right">
                   <div className="self-stretch relative leading-[110%]">
                     Highest Bid
                   </div>
                   <div className="self-stretch relative text-base leading-[140%] text-text">
                     {"..."} wETH
                   </div>
-                </div>
+                </div> */}
+              </div>
+              <div className="flex gap-3">
+                <Link className="border m-0 p-3 rounded-lg cursor-pointer" href={`/marketplace/${marketItem?.itemId}`}>Buy Item</Link>
+                <Link className="border m-0 p-3 rounded-lg cursor-pointer" href={`/marketplace/collections/${marketItem?.nftContract}`}>View Collection</Link>
               </div>
             </div>
-          </Link>
+          </div>
   
         </div>
       );
