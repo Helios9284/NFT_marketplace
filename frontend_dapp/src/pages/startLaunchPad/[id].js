@@ -37,7 +37,6 @@ const StartLaunchPad = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     write?.();
-    alert("Successful");
   };
   const { config } = usePrepareContractWrite({
     address: String(readData?.[3]),
