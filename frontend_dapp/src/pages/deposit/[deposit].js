@@ -1,10 +1,12 @@
-import { launchpadFactory } from "@/utils/contractInfo";
+import { launchpadContract, launchpadFactory } from "@/utils/contractInfo";
+import { ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useAccount,
+  useContractRead,
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
@@ -12,14 +14,51 @@ import {
 
 const Deposit = () => {
   const { deposit } = useRouter().query;
-  console.log(useRouter().query);
-  const id = Number(deposit - 1);
+  // console.log(useRouter().query);
+  const id = Number(deposit);
 
   const { address } = useAccount();
 
-  const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
-  const [uri, setUri] = useState("");
+  const [amount, setAmount] = useState("");
+  const [price, setPrice] = useState("");
+
+  const {
+    data: reads,
+    isError,
+    isLoading: loading,
+  } = useContractRead({
+    address: launchpadFactory.address,
+    abi: launchpadFactory.abi,
+    functionName: "LaunchPads",
+    args: [id],
+  });
+
+  const {
+    data: prices,
+    isError: errors,
+    isLoading: loads,
+  } = useContractRead({
+    address: reads?.[3],
+    abi: launchpadContract.abi,
+    functionName: "price",
+  });
+
+  console.log(reads);
+
+  const tryouts = () => {
+    const string = prices / ethers.utils.parseEther("1");
+    const total = string * amount;
+    const totals = String(total) ?? "0";
+    console.log(string);
+    console.log(total);
+    console.log(totals);
+    return totals;
+  };
+
+  // useEffect(() => {
+  //   setPrice(string);
+  //   console.log(price);
+  // }, [price]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,12 +66,13 @@ const Deposit = () => {
     alert("Successful");
   };
   const { config } = usePrepareContractWrite({
-    address: launchpadFactory.address,
-    abi: launchpadFactory.abi,
-    functionName: "createLaunchPad",
-    args: [name, symbol, uri],
-    overrides: { value: ethers.utils.parseEther("0.0006") },
+    address: reads?.[3],
+    abi: launchpadContract.abi,
+    functionName: "depositETH",
+    args: [amount],
+    overrides: { value: tryouts() },
   });
+
   const { data, isLoading, isSuccess, write } = useContractWrite(config);
 
   const {
@@ -55,5 +95,29 @@ const Deposit = () => {
     console.log("Your wait data is ", sendWaitData);
   }
 
-  return <div>{info?.description}</div>;
+  return (
+    <div className="w-[40%] mx-auto p-[2rem] bg-[rgba(0,0,0,0.4)] rounded-lg border border-black">
+      <p>Hello I'm the deposit page</p>
+      <h1>Support this Awesome LaunchPad</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col items-center gap-2 width-[40%]"
+      >
+        <label htmlFor="amount">Amount: </label>
+        <input
+          className="text-black w-[60%]"
+          type="text"
+          id="amount"
+          value={amount}
+          placeholder="Enter Amount to Deposit"
+          onChange={(e) => setAmount(e.target.value)}
+        />
+        <button type="submit">
+          {isLoading || loadWaitData ? "Submitting" : "SUBMIT"}
+        </button>
+      </form>
+    </div>
+  );
 };
+
+export default Deposit;
